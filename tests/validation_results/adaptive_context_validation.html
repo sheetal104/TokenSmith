@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adaptive Context Validation Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                   color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
+        .metric { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; 
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metric h3 { margin-top: 0; color: #333; }
+        .pass { color: #10b981; font-weight: bold; }
+        .fail { color: #ef4444; font-weight: bold; }
+        .stat { font-size: 48px; font-weight: bold; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th { background: #667eea; color: white; padding: 12px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; }
+        tr:hover { background: #f9f9f9; }
+        .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .summary-card { background: white; padding: 20px; border-radius: 8px; text-align: center;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Adaptive Context Window Validation Report</h1>
+        <p>Validates dynamic chunk selection based on query complexity and relevance scores</p>
+    </div>
+    
+    <div class="summary">
+        <div class="summary-card">
+            <h3>Pass Rate</h3>
+            <div class="stat pass">100.0%</div>
+            <p>Target: ≥80%</p>
+        </div>
+        <div class="summary-card">
+            <h3>Efficiency Gain</h3>
+            <div class="stat pass">+16.7%</div>
+            <p>Fewer chunks vs fixed baseline</p>
+        </div>
+        <div class="summary-card">
+            <h3>Complexity Accuracy</h3>
+            <div class="stat pass">100.0%</div>
+            <p>Query type detection</p>
+        </div>
+    </div>
+    
+    <div class="metric">
+        <h3>📋 Detailed Results</h3>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Scenario</th>
+                <th>Query</th>
+                <th>Complexity</th>
+                <th>Chunks Used</th>
+                <th>Expected Range</th>
+                <th>Mean Score</th>
+                <th>Reason</th>
+            </tr>
+
+            <tr>
+                <td>✅</td>
+                <td>High Confidence Simple</td>
+                <td>What is X?...</td>
+                <td>simple ✓</td>
+                <td>3</td>
+                <td>3-5</td>
+                <td>0.475</td>
+                <td>Using 3 chunks: very high top score, low variance (confident), simple query</td>
+            </tr>
+
+            <tr>
+                <td>✅</td>
+                <td>High Confidence Complex</td>
+                <td>Explain X, Y, and Z and how they interact...</td>
+                <td>complex ✓</td>
+                <td>5</td>
+                <td>5-8</td>
+                <td>0.510</td>
+                <td>Using 5 chunks: high top score, low variance (confident), complex query</td>
+            </tr>
+
+            <tr>
+                <td>✅</td>
+                <td>Uncertain Simple</td>
+                <td>Define term...</td>
+                <td>simple ✓</td>
+                <td>3</td>
+                <td>3-5</td>
+                <td>0.567</td>
+                <td>Using 3 chunks: low variance (confident), simple query</td>
+            </tr>
+
+            <tr>
+                <td>✅</td>
+                <td>Uncertain Complex</td>
+                <td>How do A, B, C work together and what are the trad...</td>
+                <td>complex ✓</td>
+                <td>8</td>
+                <td>7-10</td>
+                <td>0.613</td>
+                <td>Using 8 chunks: low variance (confident), complex query</td>
+            </tr>
+
+            <tr>
+                <td>✅</td>
+                <td>Low Quality Simple</td>
+                <td>What is Z?...</td>
+                <td>simple ✓</td>
+                <td>3</td>
+                <td>3-5</td>
+                <td>0.409</td>
+                <td>Using 3 chunks: low top score, low variance (confident), simple query</td>
+            </tr>
+
+            <tr>
+                <td>✅</td>
+                <td>Very High Top Score</td>
+                <td>Define ML...</td>
+                <td>simple ✓</td>
+                <td>3</td>
+                <td>3-4</td>
+                <td>0.353</td>
+                <td>Using 3 chunks: very high top score, low variance (confident), simple query</td>
+            </tr>
+
+        </table>
+    </div>
+    
+    <div class="metric">
+        <h3>💡 Key Insights</h3>
+        <ul>
+            <li><strong>Adaptive Selection:</strong> System dynamically adjusts chunk count based on confidence and complexity</li>
+            <li><strong>Efficiency:</strong> Uses fewer chunks when top results are highly relevant (saves tokens)</li>
+            <li><strong>Coverage:</strong> Uses more chunks when uncertain or query is complex (comprehensive answers)</li>
+            <li><strong>Quality Threshold:</strong> Filters out low-relevance chunks to reduce noise</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Dict, Callable, Any
+from typing import Dict, Callable, Any, Optional
 
 import yaml
 import pathlib
@@ -19,6 +19,7 @@ class QueryPlanConfig:
     top_k: int
     pool_size: int
     embed_model: str
+    embed_n_ctx: int
 
     ensemble_method: str
     rrf_k: int
@@ -41,6 +42,22 @@ class QueryPlanConfig:
     # query enhancement
     use_hyde: bool
     hyde_max_tokens: int
+    
+    # query planning (optional, populated by HeuristicQueryPlanner)
+    query_classification: Optional[Dict[str, Any]] = None
+    use_query_planner: bool = False
+    
+    # adaptive context window
+    use_adaptive_context: bool = False
+    adaptive_min_chunks: int = 3
+    adaptive_max_chunks: int = 10
+    adaptive_relevance_threshold: float = 0.5
+    adaptive_quality_variance_threshold: float = 0.15
+    adaptive_max_tokens: int = 4000
+    
+    # query embedding cache
+    use_query_cache: bool = False
+    query_cache_size: int = 1000
 
     # ---------- chunking strategy + artifact name helpers ----------
     def make_strategy(self) -> ChunkStrategy:
@@ -71,6 +88,7 @@ class QueryPlanConfig:
             top_k          = pick("top_k", 5),
             pool_size      = pick("pool_size", 60),
             embed_model    = pick("embed_model", "sentence-transformers/all-MiniLM-L6-v2"),
+            embed_n_ctx    = pick("embed_n_ctx", 8192),
             ensemble_method= pick("ensemble_method", "rrf"),
             rrf_k          = pick("rrf_k", 60),
             ranker_weights = pick("ranker_weights", {"faiss":0.6,"bm25":0.4}),
@@ -89,6 +107,21 @@ class QueryPlanConfig:
             # Query Enhancement
             use_hyde       = pick("use_hyde", False),
             hyde_max_tokens= pick("hyde_max_tokens", 100),
+            
+            # Query Planning
+            use_query_planner = pick("use_query_planner", False),
+            
+            # Adaptive Context
+            use_adaptive_context = pick("use_adaptive_context", False),
+            adaptive_min_chunks = pick("adaptive_min_chunks", 3),
+            adaptive_max_chunks = pick("adaptive_max_chunks", 10),
+            adaptive_relevance_threshold = pick("adaptive_relevance_threshold", 0.5),
+            adaptive_quality_variance_threshold = pick("adaptive_quality_variance_threshold", 0.15),
+            adaptive_max_tokens = pick("adaptive_max_tokens", 4000),
+            
+            # Query Embedding Cache
+            use_query_cache = pick("use_query_cache", False),
+            query_cache_size = pick("query_cache_size", 1000),
         )
         cfg._validate()
         return cfg

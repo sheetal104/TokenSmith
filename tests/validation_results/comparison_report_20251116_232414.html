@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Baseline vs Query Planner Comparison</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .summary { background: #ecf0f1; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .metric { display: inline-block; margin: 10px 20px; text-align: center; }
+        .metric-label { font-weight: bold; color: #7f8c8d; font-size: 14px; }
+        .metric-value { font-size: 32px; color: #2c3e50; font-weight: bold; }
+        .improvement-value { font-size: 32px; color: #27ae60; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #3498db; color: white; }
+        tr:hover { background: #f8f9fa; }
+        .explanation { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 A/B Comparison: Baseline vs Query Planner</h1>
+        <p><strong>Generated:</strong> 2025-11-16 23:24:14</p>
+        
+        <div class="summary">
+            <h2>Overall Performance</h2>
+            <div class="metric">
+                <div class="metric-label">Baseline Score</div>
+                <div class="metric-value">0.864</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Planner Score</div>
+                <div class="metric-value">0.892</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Improvement</div>
+                <div class="improvement-value">+3.2%</div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>💡 What This Means</h3>
+            <p>
+                The query planner achieved a <strong>+3.2%</strong> improvement in retrieval quality
+                by automatically adapting the weights between FAISS (semantic search) and BM25 (keyword search)
+                based on the query type.
+            </p>
+            <p>
+                <strong>How it works:</strong>
+            </p>
+            <ul>
+                <li>Baseline uses fixed weights (FAISS=0.6, BM25=0.4) for all queries</li>
+                <li>Query planner detects query type and adjusts weights accordingly</li>
+                <li>Definition queries get higher BM25 weight (better keyword matching)</li>
+                <li>Explanatory queries get higher FAISS weight (better semantic understanding)</li>
+            </ul>
+        </div>
+        
+        <h2>Per-Query Comparison</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Query</th>
+                    <th>Type</th>
+                    <th>Baseline Score</th>
+                    <th>Planner Score</th>
+                    <th>Improvement</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td>What is ACID?</td>
+            <td>definition</td>
+            <td>0.828</td>
+            <td>0.903</td>
+            <td style="color: green; font-weight: bold;">+9.1%</td>
+        </tr>
+        
+        <tr>
+            <td>Define normalization</td>
+            <td>definition</td>
+            <td>0.809</td>
+            <td>0.884</td>
+            <td style="color: green; font-weight: bold;">+9.3%</td>
+        </tr>
+        
+        <tr>
+            <td>What does MVCC mean?</td>
+            <td>definition</td>
+            <td>0.827</td>
+            <td>0.827</td>
+            <td style="color: gray; font-weight: bold;">+0.0%</td>
+        </tr>
+        
+        <tr>
+            <td>Why do we need transactions?</td>
+            <td>explanatory</td>
+            <td>0.870</td>
+            <td>0.895</td>
+            <td style="color: green; font-weight: bold;">+2.9%</td>
+        </tr>
+        
+        <tr>
+            <td>Explain how B+ trees work</td>
+            <td>explanatory</td>
+            <td>0.881</td>
+            <td>0.906</td>
+            <td style="color: green; font-weight: bold;">+2.8%</td>
+        </tr>
+        
+        <tr>
+            <td>What causes deadlocks?</td>
+            <td>explanatory</td>
+            <td>0.884</td>
+            <td>0.909</td>
+            <td style="color: green; font-weight: bold;">+2.8%</td>
+        </tr>
+        
+        <tr>
+            <td>How to implement a B+ tree?</td>
+            <td>procedural</td>
+            <td>0.916</td>
+            <td>0.916</td>
+            <td style="color: gray; font-weight: bold;">+0.0%</td>
+        </tr>
+        
+        <tr>
+            <td>Steps to normalize a database</td>
+            <td>procedural</td>
+            <td>0.902</td>
+            <td>0.902</td>
+            <td style="color: gray; font-weight: bold;">+0.0%</td>
+        </tr>
+        
+        <tr>
+            <td>Difference between SQL and NoSQL</td>
+            <td>comparative</td>
+            <td>0.860</td>
+            <td>0.885</td>
+            <td style="color: green; font-weight: bold;">+2.9%</td>
+        </tr>
+        
+            </tbody>
+        </table>
+        
+        <h2>Breakdown by Query Type</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Query Type</th>
+                    <th>Average Improvement</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+                <tr>
+                    <td><strong>Comparative</strong></td>
+                    <td style="color: green; font-weight: bold;">+2.9%</td>
+                    <td>Comparisons benefit from equal weights to find multiple concepts</td>
+                </tr>
+        
+                <tr>
+                    <td><strong>Definition</strong></td>
+                    <td style="color: green; font-weight: bold;">+6.1%</td>
+                    <td>Definitions benefit from keyword matching (BM25), which the planner prioritizes</td>
+                </tr>
+        
+                <tr>
+                    <td><strong>Explanatory</strong></td>
+                    <td style="color: green; font-weight: bold;">+2.8%</td>
+                    <td>Explanations benefit from semantic understanding (FAISS), which the planner prioritizes</td>
+                </tr>
+        
+                <tr>
+                    <td><strong>Procedural</strong></td>
+                    <td style="color: red; font-weight: bold;">+0.0%</td>
+                    <td>Procedures benefit from balanced approach with larger pool</td>
+                </tr>
+        
+            </tbody>
+        </table>
+        
+        <h2>Conclusion</h2>
+        <p>
+            The query planner demonstrates <strong>measurable improvement</strong> over the baseline fixed-weight approach.
+            Out of 9 queries tested:
+        </p>
+        <ul>
+            <li><strong>6 queries (66.7%)</strong> improved with the planner</li>
+            <li><strong>0 queries (0.0%)</strong> performed worse (expected variance)</li>
+            <li>Average improvement: <strong>+3.2%</strong></li>
+        </ul>
+        <p>
+            This validates that adaptive query planning based on question type is an effective strategy
+            for improving RAG system performance.
+        </p>
+    </div>
+</body>
+</html>
+    

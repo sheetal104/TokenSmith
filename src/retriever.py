@@ -25,11 +25,14 @@ from src.index_builder import preprocess_for_bm25
 
 _EMBED_CACHE: Dict[str, SentenceTransformer] = {}
 
-def _get_embedder(model_name: str) -> SentenceTransformer:
-    if model_name not in _EMBED_CACHE:
+def _get_embedder(model_name: str, n_ctx: int = 8192, enable_cache: bool = False) -> SentenceTransformer:
+    cache_key = f"{model_name}:{n_ctx}:{enable_cache}"
+    if cache_key not in _EMBED_CACHE:
         # Use the cached embedding model to avoid reloading it on every call
-        _EMBED_CACHE[model_name] = SentenceTransformer(model_name)
-    return _EMBED_CACHE[model_name]
+        _EMBED_CACHE[cache_key] = SentenceTransformer(
+            model_name, n_ctx=n_ctx, enable_cache=enable_cache
+        )
+    return _EMBED_CACHE[cache_key]
 
 
 # -------------------------- Read artifacts -------------------------------
@@ -96,9 +99,9 @@ class Retriever(ABC):
 class FAISSRetriever(Retriever):
     name = "faiss"
 
-    def __init__(self, index, embed_model: str):
+    def __init__(self, index, embed_model: str, n_ctx: int = 8192, enable_cache: bool = False):
         self.index = index
-        self.embedder = _get_embedder(embed_model)
+        self.embedder = _get_embedder(embed_model, n_ctx=n_ctx, enable_cache=enable_cache)
 
     def get_scores(self,
                 query: str,

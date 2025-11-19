@@ -15,10 +15,10 @@ use_hyde: false
 hyde_max_tokens: 600
 
 # Query Type Classification & Dynamic Planning
-use_query_planner: false
+use_query_planner: true
 
 # Adaptive Context Window Management
-use_adaptive_context: false
+use_adaptive_context: true
 adaptive_min_chunks: 3
 adaptive_max_chunks: 10
 adaptive_relevance_threshold: 0.5
@@ -26,5 +26,5 @@ adaptive_quality_variance_threshold: 0.15
 adaptive_max_tokens: 4000
 
 # Query Embedding Cache
-use_query_cache: false
+use_query_cache: true
 query_cache_size: 1000

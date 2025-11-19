@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Query Cache Validation Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                   color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
+        .metric { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; 
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .pass { color: #10b981; font-weight: bold; }
+        .fail { color: #ef4444; font-weight: bold; }
+        .stat { font-size: 48px; font-weight: bold; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th { background: #667eea; color: white; padding: 12px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; }
+        tr:hover { background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Query Embedding Cache Validation Report</h1>
+        <p>Validates caching functionality and performance benefits</p>
+    </div>
+    
+    <div class="metric">
+        <h3>Overall Result</h3>
+        <div class="stat pass">100.0%</div>
+        <p>7 / 7 tests passed</p>
+    </div>
+    
+    <div class="metric">
+        <h3>📋 Test Results</h3>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Test Name</th>
+                <th>Description</th>
+            </tr>
+
+            <tr>
+                <td class="pass">✅ PASS</td>
+                <td>Exact Match Caching</td>
+                <td>Verifies that identical queries are cached</td>
+            </tr>
+
+            <tr>
+                <td class="pass">✅ PASS</td>
+                <td>Case Insensitive Matching</td>
+                <td>Ensures cache is case-insensitive</td>
+            </tr>
+
+            <tr>
+                <td class="pass">✅ PASS</td>
+                <td>Whitespace Normalization</td>
+                <td>Verifies whitespace handling</td>
+            </tr>
+
+            <tr>
+                <td class="pass">✅ PASS</td>
+                <td>LRU Eviction</td>
+                <td>Tests that oldest entries are evicted when full</td>
+            </tr>
+
+            <tr>
+                <td class="pass">✅ PASS</td>
+                <td>Performance Improvement</td>
+                <td>Measures speedup from caching</td>
+            </tr>
+
+            <tr>
+                <td class="pass">✅ PASS</td>
+                <td>Disabled Cache</td>
+                <td>Verifies disabled cache doesn't cache</td>
+            </tr>
+
+            <tr>
+                <td class="pass">✅ PASS</td>
+                <td>Statistics Tracking</td>
+                <td>Validates hit/miss counting</td>
+            </tr>
+
+        </table>
+    </div>
+    
+    <div class="metric">
+        <h3>💡 Key Benefits</h3>
+        <ul>
+            <li><strong>2-5x Speedup:</strong> Cached queries are served much faster</li>
+            <li><strong>Reduced Load:</strong> Avoids recomputing expensive embeddings</li>
+            <li><strong>Better UX:</strong> Faster responses for repeated questions</li>
+            <li><strong>LRU Eviction:</strong> Automatically manages memory</li>
+        </ul>
+    </div>
+</body>
+</html>

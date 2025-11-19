@@ -203,6 +203,23 @@ class RunLogger:
         }
         self._write_log(error_data)
 
+    def log_event(self, event_type: str, message: str, **kwargs):
+        """Log a custom event with arbitrary data."""
+        if not self.current_query_data:
+            self.current_query_data = {}
+        
+        # Add event to current query data
+        if "events" not in self.current_query_data:
+            self.current_query_data["events"] = []
+        
+        event_data = {
+            "type": event_type,
+            "message": message,
+            "timestamp": datetime.now().isoformat(),
+            **kwargs
+        }
+        self.current_query_data["events"].append(event_data)
+
     def _write_log(self, data: Dict[str, Any]):
         """Write a log entry to the JSONL file."""
         with open(self.log_file, "a", encoding="utf-8") as f:

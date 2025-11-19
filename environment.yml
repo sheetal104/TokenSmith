@@ -24,4 +24,5 @@ dependencies:
     - sentence-transformers
     - rank_bm25
     - langchain
+    - langchain-text-splitters  # Required for RecursiveCharacterTextSplitter
     - pytest

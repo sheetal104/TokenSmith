@@ -150,9 +150,52 @@ def get_answer(
         # Step 2: Ranking
         ordered = ranker.rank(raw_scores=raw_scores)
         topk_idxs = apply_seg_filter(cfg, chunks, ordered)
-        logger.log_chunks_used(topk_idxs, chunks, sources)
         
-        ranked_chunks = [chunks[i] for i in topk_idxs]
+        # Step 2.5: Adaptive Context Window (if enabled)
+        adaptive_metadata = None
+        if cfg.use_adaptive_context:
+            from src.adaptive_context import AdaptiveContextManager
+            
+            # Combine scores for adaptive selection
+            combined_scores = {}
+            for retriever_name, scores in raw_scores.items():
+                weight = cfg.ranker_weights.get(retriever_name, 0.5)
+                for idx, score in scores.items():
+                    combined_scores[idx] = combined_scores.get(idx, 0) + weight * score
+            
+            # Create manager
+            manager = AdaptiveContextManager(
+                min_chunks=cfg.adaptive_min_chunks,
+                max_chunks=cfg.adaptive_max_chunks,
+                relevance_threshold=cfg.adaptive_relevance_threshold,
+                quality_variance_threshold=cfg.adaptive_quality_variance_threshold,
+                max_tokens=cfg.adaptive_max_tokens
+            )
+            
+            # Estimate complexity
+            complexity = manager.estimate_query_complexity(question)
+            
+            # Prepare ranked chunks with scores
+            ranked_with_text = [(idx, chunks[idx]) for idx in topk_idxs]
+            
+            # Select adaptive chunks
+            ranked_chunks, adaptive_metadata = manager.select_chunks(
+                ranked_with_text, combined_scores, complexity
+            )
+            
+            # Update topk_idxs to reflect adaptive selection
+            # (for logging purposes - use indices of selected chunks)
+            topk_idxs = topk_idxs[:len(ranked_chunks)]
+            
+            # Log adaptive decision
+            logger.log_event(
+                "adaptive_context",
+                f"Selected {len(ranked_chunks)} chunks ({adaptive_metadata['reason']})"
+            )
+        else:
+            ranked_chunks = [chunks[i] for i in topk_idxs]
+        
+        logger.log_chunks_used(topk_idxs, chunks, sources)
         
         # Capture chunk info if in test mode
         if is_test_mode:
@@ -203,7 +246,13 @@ def run_chat_session(args: argparse.Namespace, cfg: QueryPlanConfig):
     Initializes artifacts and runs the main interactive chat loop.
     """
     logger = get_logger()
-    # planner = HeuristicQueryPlanner(cfg)
+    
+    # Initialize query planner if enabled
+    planner = None
+    if cfg.use_query_planner:
+        from src.planning.heuristics import HeuristicQueryPlanner
+        planner = HeuristicQueryPlanner(cfg)
+        print("🧠 Query planner enabled - will adapt strategy based on question type")
 
     # Load artifacts, initialize retrievers and rankers once before the loop.
     print("Welcome to Tokensmith! Initializing chat...")
@@ -217,7 +266,12 @@ def run_chat_session(args: argparse.Namespace, cfg: QueryPlanConfig):
         )
 
         retrievers = [
-            FAISSRetriever(faiss_index, cfg.embed_model),
+            FAISSRetriever(
+                faiss_index, 
+                cfg.embed_model, 
+                n_ctx=cfg.embed_n_ctx,
+                enable_cache=cfg.use_query_cache
+            ),
             BM25Retriever(bm25_index)
         ]
         ranker = EnsembleRanker(
@@ -249,8 +303,18 @@ def run_chat_session(args: argparse.Namespace, cfg: QueryPlanConfig):
                 print("Goodbye!")
                 break
 
+            # Apply query planner if enabled
+            query_cfg = cfg
+            if planner:
+                query_cfg = planner.plan(q)
+                classification = query_cfg.query_classification
+                print(f"  🔍 Detected: {classification['type']} query "
+                      f"(confidence: {classification['confidence']:.2f})")
+                print(f"  ⚙️  Adjusted weights: FAISS={classification['adjusted_weights']['faiss']:.1f}, "
+                      f"BM25={classification['adjusted_weights']['bm25']:.1f}")
+
             # Use the single query function
-            ans = get_answer(q, cfg, args, logger=logger,artifacts=artifacts)
+            ans = get_answer(q, query_cfg, args, logger=logger, artifacts=artifacts)
 
             print("\n=================== START OF ANSWER ===================")
             print(ans.strip() if ans and ans.strip() else "(No output from model)")
@@ -259,6 +323,13 @@ def run_chat_session(args: argparse.Namespace, cfg: QueryPlanConfig):
 
         except KeyboardInterrupt:
             print("\nGoodbye!")
+            
+            # Print cache stats if enabled
+            if cfg.use_query_cache and retrievers:
+                for retriever in retrievers:
+                    if hasattr(retriever, 'embedder') and hasattr(retriever.embedder, 'print_cache_stats'):
+                        retriever.embedder.print_cache_stats()
+            
             break
         except Exception as e:
             print(f"\nAn unexpected error occurred: {e}")

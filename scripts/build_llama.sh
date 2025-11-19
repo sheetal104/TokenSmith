@@ -47,12 +47,33 @@ case "$OS" in
     ;;
   Linux)
     log "Configuring for Linux..."
-    if command -v nvidia-smi >/dev/null 2>&1; then
-      log "NVIDIA GPU detected — enabling CUDA"
+    # Check for CUDA toolkit (not just nvidia-smi which exists from Windows)
+    if command -v nvcc >/dev/null 2>&1 && [ -d "/usr/local/cuda" ]; then
+      log "NVIDIA CUDA Toolkit detected — enabling CUDA"
       CMAKE_OPTS+=(-DGGML_CUDA=ON)
     else
-      log "CPU-only build (no NVIDIA GPU detected)"
-      CMAKE_OPTS+=(-DGGML_ACCELERATE=ON)
+      # Explicitly disable CUDA and use CPU optimizations
+      if command -v nvidia-smi >/dev/null 2>&1; then
+        log "NVIDIA GPU detected but CUDA toolkit not installed"
+        log "Building CPU-only version (install cuda-toolkit for GPU support)"
+      else
+        log "No NVIDIA GPU detected - building CPU-only version"
+      fi
+      
+      # Explicitly disable CUDA
+      CMAKE_OPTS+=(-DGGML_CUDA=OFF)
+      
+      # Try to use OpenBLAS for CPU optimization
+      if pkg-config --exists openblas 2>/dev/null; then
+        log "OpenBLAS found via pkg-config - enabling BLAS support"
+        CMAKE_OPTS+=(-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS)
+      elif ldconfig -p 2>/dev/null | grep -q libopenblas; then
+        log "OpenBLAS found via ldconfig - enabling BLAS support"
+        CMAKE_OPTS+=(-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS)
+      else
+        log "OpenBLAS not found - building basic CPU version"
+        log "For better performance, install: sudo apt install libopenblas-dev"
+      fi
     fi
     ;;
   *)
